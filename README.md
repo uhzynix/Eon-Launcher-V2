@@ -16,7 +16,7 @@
 
 ## About
 
-Eon Launcher V2 is the official launcher for Eon. I rebuilt it from scratch with a new design, a rewritten interface, new features and a lot of bug fixes. It is still in active development.
+Eon Launcher V2 is the official launcher for Eon. This is an updated version of the old Eon launcher version. I took the existing project, redid it from scratch and improved it, with a completely new design, a rewritten interface, new features and a lot of bug fixes.
 
 ## Features
 
