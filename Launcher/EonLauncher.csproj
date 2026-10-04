@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<RootNamespace>Eon</RootNamespace>
+		<Platforms>x86;x64;ARM64</Platforms>
+		<WindowsSdkPackageVersion>10.0.22621.38</WindowsSdkPackageVersion>
+		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+		<PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+		<UseWinUI>true</UseWinUI>
+		<EnableMsixTooling>true</EnableMsixTooling>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<WindowsPackageType>None</WindowsPackageType>
+		<ApplicationIcon>..\Public\Content\Texture\Branding\Eon.ico</ApplicationIcon>
+		<ApplicationManifest>Source\Core\Manifest\Eon.manifest</ApplicationManifest>
+		<AssemblyName>Eon</AssemblyName>
+		<SignAssembly>False</SignAssembly>
+		<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+		<Company>Eon</Company>
+		<Product>Eon</Product>
+		<Authors>David</Authors>
+		<Copyright>David</Copyright>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<WebClientDirectory>$(MSBuildProjectDirectory)\..\WebClient\</WebClientDirectory>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == ''">
+		<RuntimeIdentifier Condition="'$(Platform)' == 'x86'">win-x86</RuntimeIdentifier>
+		<RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
+		<RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250702007-experimental4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="RestSharp" Version="112.1.0" />
+		<PackageReference Include="WinUIEx" Version="2.6.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<ProjectCapability Include="Msix" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="Source\Core\Bridge\Bridge.js">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<Target Name="BuildWebClient">
+		<Exec Command="npm install" WorkingDirectory="$(WebClientDirectory)" Condition="!Exists('$(WebClientDirectory)node_modules')" />
+		<Exec Command="npm run build" WorkingDirectory="$(WebClientDirectory)" Condition="!Exists('$(WebClientDirectory)dist\index.html')" />
+		<ItemGroup>
+			<WebClientFile Include="$(WebClientDirectory)dist\**\*" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="CopyWebClient" AfterTargets="Build" DependsOnTargets="BuildWebClient">
+		<Copy SourceFiles="@(WebClientFile)" DestinationFiles="@(WebClientFile->'$(OutDir)Content\Web\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="PublishWebClient" BeforeTargets="ComputeFilesToPublish" DependsOnTargets="BuildWebClient">
+		<ItemGroup>
+			<ResolvedFileToPublish Include="@(WebClientFile)">
+				<RelativePath>Content\Web\%(WebClientFile.RecursiveDir)%(WebClientFile.Filename)%(WebClientFile.Extension)</RelativePath>
+				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			</ResolvedFileToPublish>
+		</ItemGroup>
+	</Target>
+</Project>

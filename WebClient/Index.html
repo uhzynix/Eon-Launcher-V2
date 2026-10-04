@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Eon Launcher</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #060607; }
+      #boot { position: fixed; inset: 0; display: grid; place-items: center; }
+      #boot span {
+        width: 26px;
+        height: 26px;
+        border: 2px solid rgba(255, 255, 255, .16);
+        border-top-color: rgba(255, 255, 255, .7);
+        border-radius: 50%;
+        animation: boot-spin .8s linear infinite;
+      }
+      @keyframes boot-spin { to { transform: rotate(360deg); } }
+    </style>
+    <script>
+      (function () {
+        try {
+          var Theme = localStorage.getItem("EonLauncherTheme");
+          if (Theme && Theme !== "default") {
+            document.documentElement.setAttribute("data-theme", Theme);
+          }
+        } catch (Error) {
+        }
+      })();
+      window.Eon.Invoke("ShowWindow");
+    </script>
+    <link rel="icon" href="/Content/Texture/Branding/Eon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    />
+  </head>
+
+  <body>
+    <div id="boot"><span></span></div>
+    <div id="app"></div>
+    <script type="module" src="/Main.tsx"></script>
+  </body>
+</html>
